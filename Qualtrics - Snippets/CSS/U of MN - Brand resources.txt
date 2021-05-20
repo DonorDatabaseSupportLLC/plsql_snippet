@@ -1,0 +1,7 @@
+https://university-relations.umn.edu/resources/colors-and-type
+
+
+
+HTML Colors
+Gold: R:255 G:204 B:51 (#ffcc33)
+Maroon: R:122 G:0 B:25 (#7a0019)

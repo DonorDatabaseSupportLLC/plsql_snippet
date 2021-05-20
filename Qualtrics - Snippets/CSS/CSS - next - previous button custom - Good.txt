@@ -1,0 +1,13 @@
+
+/* mouse hoverover bgcolor for Previous Button */
+.Skin #Buttons #PreviousButton:hover {
+    background: #7A0019;
+    font-weight: bold;
+}
+
+
+/* mouse hoverover bgcolor for Next Button */
+.Skin #Buttons #NextButton:hover {
+    background: #333333;
+    font-weight: bold;
+}

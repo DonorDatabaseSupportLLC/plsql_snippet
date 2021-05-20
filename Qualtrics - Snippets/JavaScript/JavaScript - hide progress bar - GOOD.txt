@@ -1,0 +1,41 @@
+<script>
+Qualtrics.SurveyEngine.addOnReady(function(){
+ jQuery("#ProgressBar").hide(); 
+/* jQuery("#yourElement").text(jQuery("#ProgressBarFillContainer span").text()); */
+});
+</script>
+
+
+
+
+--HELPERS 
+--JQuery (CSS) version 
+
+jQuery(document).click(function(event) {
+  var target = $( event.target );
+
+  // Check to see if the target is the div.
+  if (!target.is( "div#Plug" )) {
+    $("div#Plug").hide();
+    // Prevent default event -- may not need this, try to see
+    return( false );
+  }
+});
+
+
+<script>
+Qualtrics.SurveyEngine.addOnload(function()
+{
+var plug = document.getElementById("Plug"); //Get the Defined element
+jQuery("div#Plug").hide();
+--plug.style.cssText += ';display:none !important;'; //Set the defined element's display style to "none"
+});
+</script>
+
+
+--v2 - qualtrics community 
+<script type="text/javascript">
+Qualtrics.SurveyEngine.addOnReady(function() {
+	 jQuery('#Plug').attr('style', 'display:none !important');
+});
+</script>

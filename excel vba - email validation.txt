@@ -1,0 +1,18 @@
+' --- beginning of code ---
+Function IsValidEmail(mytext As String) As Boolean
+Dim RE As Object
+Dim REPattern As String
+Dim REMatches As Object
+
+Set RE = CreateObject("vbscript.regexp")
+REPattern = "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[A-Z]{2}|com|org|net|edu|gov|mil|biz|info|mobi|name|aero|asia|jobs|museum|coop)$"
+RE.Global = True
+RE.ignorecase = True
+RE.Pattern = REPattern
+
+Set REMatches = RE.Execute(mytext)
+
+IsValidEmail = (REMatches.Count > 0)
+    
+End Function
+' --- end of code ---

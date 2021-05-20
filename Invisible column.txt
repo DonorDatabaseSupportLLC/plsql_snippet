@@ -1,0 +1,6 @@
+DROP TABLE tab1 PURGE;
+CREATE TABLE tab1 (
+  id          NUMBER NOT NULL,
+  description VARCHAR2(50) NOT NULL,
+  created_date DATE INVISIBLE NOT NULL 
+)

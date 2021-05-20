@@ -1,0 +1,32 @@
+--PART I. Search 'remove_' or 'remove%' exact literal--under gitHub folder and sub-folders - Using Powershell
+findstr /n /i /S /L "remove_v" W:\ics\QTeam\GitHub\*.sql > C:\Users\aijibril\Desktop\GitHub_Result\results_gitHub1.csv
+
+     --i = case insensitive search
+     --L = literal search not regular expression (which checks occurance)
+     --n = prints line before each finding     
+     --S = search subdirectory
+
+
+--PART II. search in all packages/Procedures using this code --Using Oracle SQL Navigator. 
+with temp_pack_body 
+as(
+    select s.* 
+    from all_source s 
+    where 1=1 --and s.name = 'LTD_PROD' 
+    and s.type in ('PACKAGE BODY','PACKAGE','PROCEDURE','TYPE','FUNCTION')
+    and s.owner = 'QRYADM' 
+    order by line
+  )
+select tp.*
+from temp_pack_body tp 
+where lower(tp.text) like '%flag_give_rel%'
+;
+
+
+---------- helper -------------------
+--1B. get the source code of your views - to update the view code
+SELECT dbms_metadata.get_ddl('VIEW','QT_INDIVIDUAL', 'TABLEAU') AS source_code from user_views ; --someone else schema
+SELECT dbms_metadata.get_ddl('VIEW','MED_ALUMS_4YR_MD_ONLY', 'AIJIBRIL') AS source_code from user_views ;--your own schema
+
+SELECT * FROM remove_v@prod;
+

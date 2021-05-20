@@ -1,0 +1,15 @@
+One way to make your data legible is to apply cell shading to every other row in a range. Excel's Conditional Formatting feature (available in Excel or later) makes this a simple task.
+
+Select the range that you want to format
+
+Choose Format, Conditional Formatting
+
+In the Conditional Formatting dialog box, select Formula Is from the drop-down list, and enter this formula:
+
+=MOD(ROW(),2)=0
+
+Click the Format button, select the Patterns tab, and specify a color for the shaded rows.
+
+Click OK twice to return to your worksheet.
+
+The best part is that the row shading is dynamic. You'll find that the row shading persists even if you insert or delete rows within the original range.

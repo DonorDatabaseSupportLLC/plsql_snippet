@@ -1,0 +1,127 @@
+ 
+-- ************************************ 
+--formatting phone# 
+-- ************************************ 
+WITH temp_phone AS 
+ ( SELECT '651.276.0718' as phone
+   FROM dual
+)
+SELECT REGEXP_REPLACE(phone,
+                 '([[:digit:]]{3})\.([[:digit:]]{3})\.([[:digit:]]{4})',
+                 '(\1) \2-\3') "REGEXP_REPLACE_PHONE" 
+FROM temp_phone;
+
+
+select i.nbr_phone
+ , regexp_replace(i.nbr_phone,'(^[[:digit:]]{3})([[:digit:]]{4}$)','\1-\2') formatted_nr
+ from q_individual i 
+ WHERE i.id_demo = 140399690; 
+
+
+-- ************************************ 
+-- separate text and numeric characters 
+-- ************************************ 
+DROP TABLE test_remove_numb_str;
+create TABLE test_remove_numb_str AS 
+SELECT 'A0123456789aaBD10111213' AS names FROM dual; 
+
+--test data 
+SELECT * FROM test_remove_numb_str;--A0123456789BD8888I99
+
+--option 1 : remove 
+
+SELECT regexp_replace(names, '[0-9]', '')     AS removes_numbers FROM test_remove_numb_str ;--ABDI
+SELECT regexp_replace(names, '[A-Z a-z]', '') AS removes_text FROM test_remove_numb_str ;--0123456789
+
+
+--find first word from a phrase seperated by space 
+--1. test  
+--drop  table test_a;
+--create table test_a as 
+select '3/8/2019 0:00:00 A3P3' as dates from dual; --3/8/2019 0:00:00 A3P3
+select to_date(regexp_substr(dates ,'[^ - ]+',1,1),'mm/dd/yyyy') as dates from test_a;
+
+--2. test 
+select to_date(regexp_substr('3/8/2019 0:00:00 A3P3' ,'[^ - ]+',1,1),'mm/dd/yyyy') as dates from dual;
+
+
+--A
+/*DROP TABLE t201601298a ;
+CREATE  TABLE t201601298a AS 
+SELECT gp.id_demo
+      , NAMER.last(i.id_demo)                          AS last_Name
+      , NAMER.first(i.id_demo)                         AS first_Name
+      , NAMER.LABEL_COMB(i.id_demo)                    AS label_name_comb
+      , NAMER.LABEL (i.id_demo)                        AS label_name
+      , DECODE(gp.code_event_attend, 'T', 'Y', 'N')    AS Attended
+      , CASE WHEN em.id_demo IS NULL 
+             THEN i.email_addr
+             ELSE SUBSTR(i.email_addr,  (INSTR(i.email_addr, '@', 1, 1)+1) )         
+        END AS email_addr
+      , CASE WHEN ph.id_demo IS NULL 
+             THEN phn.nbr(i.id_demo)
+             ELSE '(xxx) ' || regexp_replace(i.nbr_phone,'(^[[:digit:]]{3})([[:digit:]]{4}$)','\1-\2')   
+        END AS phoneNumber
+      , decode( i.code_addr_stat, 'C', i.id_pref_addr, NULL)              AS id_pref_addr
+      , decode( i.code_addr_stat, 'C', i.code_addr_type, NULL)            AS code_addr_type
+      , decode( i.code_addr_stat, 'C', i.attention, NULL)                 AS attention
+      , decode( i.code_addr_stat, 'C', i.street_1, NULL)                  AS street_1
+      , decode( i.code_addr_stat, 'C', i.street_2, NULL)                  AS street_2
+      , decode( i.code_addr_stat, 'C', i.street_3, NULL)                  AS street_3
+      , decode( i.code_addr_stat, 'C', i.city, NULL)                      AS city     
+      , decode( i.code_addr_stat, 'C', i.state, NULL)                     AS state   
+      , decode( i.code_addr_stat, 'C', i.zip_code, NULL)                  AS zip_code
+      , decode( i.code_addr_stat, 'C', i.zip_ext, NULL)                   AS zip_ext
+      , decode( i.code_addr_stat, 'C', i.code_carrier_rt, NULL)           AS code_carrier_rt
+      , decode( i.code_addr_stat, 'C', i.code_post_net, NULL)             AS code_post_net
+      , decode( i.code_addr_stat, 'C', i.code_lot_sort_order, NULL)       AS code_lot_sort_order
+      , decode( i.code_addr_stat, 'C', i.code_line_of_travel, NULL)       AS code_line_of_travel
+      , decode( i.code_addr_stat, 'C', i.code_country, NULL)              AS code_country
+      , decode( i.code_addr_stat, 'C', i.foreign_postal, NULL)            AS foreign_postal
+      , decode( i.code_addr_stat, 'C', i.onecode_acs_non_presort, NULL)   AS onecode_acs_non_presort
+      , ACAD.LAST_U_DEGREE_YEAR (acad.LAST_U_DEGREE_COMB(i.id_demo))      AS last_grad_year
+      , GROUP_FUN.SUBSCRIPTION_LIST(i.id_demo)                            AS opt_outs
+      , decode(i.code_addr_stat, 'C', 'Y', 'N')                           AS has_valid_addr
+FROM GROUP_PART gp 
+     JOIN q_individual i          ON i.id_demo  = gp.id_demo 
+     LEFT JOIN optout_email_U em  ON em.id_demo = gp.ID_DEMO
+     LEFT JOIN optout_ph_U ph     ON ph.id_demo = gp.ID_DEMO
+WHERE gp.nbr_group = 10405 
+  AND i.YEAR_death IS NULL 
+;
+
+ SELECT * FROM t201601298a  ; */ 
+
+-- ************************************ 
+--formatting phone# 
+-- ************************************ 
+WITH temp_phone AS 
+ ( SELECT '651.276.0718' as phone
+   FROM dual
+)
+SELECT REGEXP_REPLACE(phone,
+                 '([[:digit:]]{3})\.([[:digit:]]{3})\.([[:digit:]]{4})',
+                 '(\1) \2-\3') "REGEXP_REPLACE_PHONE" 
+FROM temp_phone;
+
+
+select i.nbr_phone
+ , regexp_replace(i.nbr_phone,'(^[[:digit:]]{3})([[:digit:]]{4}$)','\1-\2') formatted_nr
+ from q_individual i 
+ WHERE i.id_demo = 140399690; 
+
+
+-- ************************************ 
+-- separate text and numeric characters 
+-- ************************************ 
+DROP TABLE test_remove_numb_str;
+create TABLE test_remove_numb_str AS 
+SELECT 'A0123456789aaBD10111213' AS names FROM dual; 
+
+--test data 
+SELECT * FROM test_remove_numb_str;--A0123456789BD8888I99
+
+--option 1 : remove 
+
+SELECT regexp_replace(names, '[0-9]', '')     AS removes_numbers FROM test_remove_numb_str ;--ABDI
+SELECT regexp_replace(names, '[A-Z a-z]', '') AS removes_text FROM test_remove_numb_str ;--0123456789

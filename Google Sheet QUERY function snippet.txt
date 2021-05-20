@@ -1,0 +1,4 @@
+--Google Query Function 
+
+--a) top x rows 
+=query(us_pop_2010,"select  * ORDER BY C DESC LIMIT 10")

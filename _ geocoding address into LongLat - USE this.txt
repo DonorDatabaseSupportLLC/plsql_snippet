@@ -1,0 +1,34 @@
+--1. Option - Preferred. 
+--Using US Census Bureau site: https://geocoding.geo.census.gov, plugin address. 
+Coordinates:
+X: -89.3812  --longitude   
+Y: 43.07263  --latitude
+
+
+--2. Option. 
+--Google map --type the address into google map and browser URL will have long/lat: 
+Lat: 43.072474
+Long: -89.3829197
+
+--3. Another option. --do not use. 
+--gps-coordinates.net: 
+Latitude: 43.07252
+Longitude: -89.381254
+
+
+--=================================================================================================
+--create SDO_GEOMETRY data type field so you can search people who live xyz raduis of this address 
+--=================================================================================================
+
+SDO_GEOMETRY(2001,4326,SDO_POINT_TYPE(-X,Y,NULL),NULL,NULL)  --plug in X(longitute). Y(latitude)
+
+
+--******************************************************************************************************
+--Status: DOES NOT WORK.  Figure out. 
+--Solution: Use temp table. --see query # 201901927 
+--create table so you can use it as the Query Window table - reference point (Event/Invitees--it is the EVENT table).
+--******************************************************************************************************
+create table t201901927_geo as 
+select SDO_GEOMETRY(2001,4326,SDO_POINT_TYPE(89.3812,43.07263,NULL),NULL,NULL) as geo_location   
+from dual ;
+

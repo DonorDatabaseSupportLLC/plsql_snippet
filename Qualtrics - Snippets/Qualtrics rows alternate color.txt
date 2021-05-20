@@ -1,0 +1,7 @@
+--Qualtrics alternate color for rows
+tr.ChoiceRow{
+  background-color:#F0F0F0;
+}
+tr.ChoiceRow.ReadableAlt{
+  background-color:white;
+}

@@ -1,0 +1,4 @@
+- Fairview Employee giving - Reporting (in-progress)
+- Mental Health report - Delayed till May 26th for email 
+
+=CONCATENATE(D2," and ",I2)

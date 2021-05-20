@@ -1,0 +1,19 @@
+===== Change conditionally when selected 'No/Yes' =============
+jQuery("#NextButton").attr({value:"Submit",title:"Submit"});
+    jQuery('input[type=radio]').change(function() {
+        if(jQuery("input[type='radio']:last").is(':checked')){
+            jQuery("#NextButton").attr({value:"Submit",title:"Submit"});}else{
+            jQuery("#NextButton").attr({value:"Next",title:"Next"});}
+    });
+
+
+===== without condition =============
+Qualtrics.SurveyEngine.addOnReady(function()  
+{
+	/*Place your JavaScript here to run when the page is fully displayed*/
+	
+	
+	 jQuery("#NextButton").attr({value:"Submit",title:"Submit"});  ---code 
+	
+
+});

@@ -1,0 +1,1 @@
+=query(us_pop_2010,"select  A,B,C ORDER BY C DESC LIMIT 10")

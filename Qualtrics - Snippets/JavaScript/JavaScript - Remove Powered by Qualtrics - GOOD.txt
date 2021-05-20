@@ -1,0 +1,33 @@
+--**********************************************
+--v1: Do not use - it does not work 
+--**********************************************
+<script>
+Qualtrics.SurveyEngine.addOnload(function()
+{
+var plug = document.getElementById("Plug"); //Get the Defined element
+plug.style.cssText += ';display:none !important;'; //Set the defined element's display style to "none"
+});
+</script>
+
+
+--**********************************************
+--v2: USE this works well. 
+--**********************************************
+<script type="text/javascript">
+Qualtrics.SurveyEngine.addOnReady(function() {
+	 jQuery('#Plug').attr('style', 'display:none !important');
+});
+</script>
+
+
+/* --- HOW TO DOCUMENTATION ---
+Remove the "Powered by Qualtrics" plug on bottom of survey
+- Click "Look & Feel"
+- Click the "Advanced" tab
+- In the "Header" field, paste the following code:
+- In the "General" tab, set "Page Transition" to "None" (this must be disabled in order for the "Powered by Qualtrics" plug to be hidden with the    header code above)
+
+*/
+
+
+

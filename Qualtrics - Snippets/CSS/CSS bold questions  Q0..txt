@@ -1,0 +1,17 @@
+
+/*  hide this question  */
+.QuestionText .ExportTag { 
+	font-weight: bolder;
+}
+
+
+/* 
+remember to call first Question (for intro section) that you're hiding "Q0". 
+That way, when running Accessibility test, it does not fail.
+
+*/
+
+
+
+
+

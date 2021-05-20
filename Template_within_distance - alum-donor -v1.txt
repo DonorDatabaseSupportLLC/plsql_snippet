@@ -1,0 +1,229 @@
+--******************* fnd_ry_999999999_v1.SQL ***************************
+--purpose: UMM Inquiry from Development Officer 
+--author: Abdi Jibril
+--date: 24-MAY-2019
+--original Query: 999999999 --last query: 201901568 
+--SELECT to_char(SYSDATE,'DD-MON-YYYY') as dt FROM dual;
+--*************************************************************************
+
+
+--**********************************************************
+--option 1 
+--when to use: ONLY use when miles NOT needed as output.
+--**********************************************************
+-- 1. Search Fields  : CLA donors OR Alums
+-- 2. Query Window   : Seatle, WA 98104
+-- 3. Radius         : 40 miles from Query Windows (2). 
+--1. get anyone in DMS who is 40 Mi within Seatle Downtown.
+exec qryadm.radius_addr_finder('98104', 40, 't999999999_id_addr') ;  --Runtime last 13-Sep-2019: 1 sec. 
+select count(*), count(id_addr) from t999999999_aa; --9118
+select * from t999999999_aa; 
+
+--2. get the pool of donors/alums who're in this goegraphic areas
+drop table t999999999_b;
+create table t999999999_b as 
+select w.id_demo, i.state, i.city, i.zip_code 
+from(select p.id_demo 
+    from q_production_id p 
+    where p.code_clg = 'CLA'
+    and p.code_anon in ('0','1')
+    and p.code_recipient != 'S'
+    union
+    select id_demo 
+    from q_academic
+    where code_clg_query = 'CLA'
+  )w 
+   join q_individual i 
+        on i.id_demo = w.id_demo
+   join t999999999_aa ad 
+        on ad.id_addr = i.id_pref_addr 
+where 1=1 
+and i.year_death is null 
+and i.code_anon in ('0','1')
+;
+
+
+
+--***********************************************************
+-- Option #  2 (similar to Option # 1) 
+-- when to use: ONLY use when miles NOT needed as output.
+--***********************************************************
+-- 1. Search Fields  : CLA donors OR Alums
+-- 2. Query Window   : Seatle, WA 98104                     --Mpls, MN 55455
+-- 3. Radius         : 40 miles from Query Windows (2).     --10 Mi
+
+--pool 
+drop table t999999999_a;
+create table t999999999_a as 
+with temp_alums                                 
+as(select w.id_demo, i.state, i.city, i.zip_code, ad.geo_location as geo        --1. Search field: temp_alums.geo_Location 
+   from(select p.id_demo 
+        from q_production_id p 
+        where p.code_clg = 'CLA'
+        and p.code_anon in ('0','1')
+        and p.code_recipient != 'S'
+        union 
+        select id_demo 
+        from q_academic
+        where code_clg_query = 'CLA'
+      )w 
+       join q_individual i 
+            on i.id_demo = w.id_demo
+       join address ad 
+            on ad.id_addr = i.id_pref_addr 
+   where 1=1 
+   and ad.geo_location is not null 
+   and i.year_death is null 
+   and i.code_addr_stat = 'C'
+   and i.code_anon in ('0','1')
+   and i.state = 'MN'
+   --and lower(ad.error_string) = 'no error' 
+)
+, temp_events                                                            --2. Query window --reference point  
+as(select geo_location as geo, city as city_event_loc, zipcode as zip_event_loc  
+   from cbsa_county
+   where zipcode in ('55455')   
+   and primaryrecord = 'P'
+)
+select  /* Leading(a2) */
+    distinct a1.id_demo, a1.city, a1.state, a1.zip_code 
+    , mdsys.sdo_geom.sdo_distance(a1.geo, a2.geo, 0.0000000005, 'unit=mile') as distance_miles
+from temp_alums a1 
+     , temp_events a2 
+where sdo_within_distance (a1.geo                      --1: Search column: addresses within 60 miles of 'address i' 
+                           , a2.geo                     --2: Query window: Reference point - for checking for distance against the 'temp_alums.geo'  
+                           , 'distance = 10 unit=mile'
+                         ) = 'TRUE'
+order by distance_miles
+; --run time: 2  seconds  
+ 
+select count(*), count(distinct id_demo) from t999999999_a;
+
+
+
+--***************************************************
+--option 2 
+--***************************************************
+-- colquet center (Colquet)      : 55720
+-- North Central (Grand Rapids)  : 55744
+-- Northwest (Crookston)         : 56716
+-- South (Waseca)                : 56093
+-- Southwest(Lamberton)          : 56152
+-- West (Morris)                 : 56267
+-- Hubachek (Ely):               : 55731 
+
+DROP TABLE t999999999_a;
+CREATE TABLE t999999999_a AS
+with temp_alums                                 --1. Get the alums id_demo, geo_Location 
+as(select i.id_demo, i.id_pref_addr, i.zip_code, i.city, i.state, ad.geo_location    --46,264 
+   from(
+         select a.id_demo
+         from q_academic a
+         where a.code_clg_query = 'FAN'
+         union 
+         select a.id_demo
+         from q_production_id a
+         where a.code_clg = 'FAN'
+         and a.code_anon in ('0','1')
+         and a.code_recipient != 'S'
+
+        )w 
+         join q_individual i on i.id_demo = w.id_demo
+         join address ad on ad.id_addr = i.id_pref_addr 
+    where ad.geo_location is not null 
+    and i.year_death is null 
+    and i.code_addr_stat = 'C'
+    and i.code_anon in ('0','1')
+    --and w.id_demo = 100048399
+    --and lower(ad.error_string) = 'no error'  --SUPER SLOW so remove this 
+/*    AND NOT EXISTS (SELECT 1 
+                    FROM all_subscription_v asv
+                    WHERE 1=1
+                    AND asv.id_demo = w.id_demo 
+                    AND asv.code_unit = 'FAN'
+                    AND asv.code_channel = 'M'                 -- M = Mail  --E = Email  --P = Phone
+                    AND asv.code_subscript_type = 'E'          -- E = Event  --P = Publication  --S = Solicitation  --V = Survey
+                    AND asv.code_subscription IS NULL          -- Use for general subscription level
+                    AND asv.code_subscript_opt_type = 'OUT'
+                    AND NOT EXISTS (SELECT 1 FROM all_subscription_v asv2
+                                    WHERE 1=1
+                                      AND asv.id_demo = asv2.id_demo
+                                      AND asv.code_unit = asv2.code_unit
+                                      AND asv.code_channel = asv2.code_channel
+                                      AND asv.code_subscript_type = asv2.code_subscript_type
+                                      AND asv.code_subscription = asv2.code_subscription
+                                      AND asv2.code_subscript_opt_type = 'IN'
+                                      ))*/
+    
+)
+, temp_events                         --CBSA_COUNTY event locations --reference point  --from speicific zip code 
+as(select geo_location
+          , city     as city_event_loc
+          , zipcode  as zip_event_loc  
+   from cbsa_county
+   where zipcode in ('55720','55744','56716','56093','56152','56267','55731')   
+   and primaryrecord = 'P'
+   and zipcode is not null 
+ )
+, temp_pool 
+as(select w.*   
+          , dense_rank()over(partition by id_demo order by distance asc, rownum) as rnk   
+   from(
+        select a.id_demo 
+               , a.id_pref_addr
+               , a.city             as pref_city          
+               , a.state            as pref_state 
+               , a.zip_code         as pref_zip
+               , e.zip_event_loc
+               , e.city_event_loc
+               , SDO_GEOM.SDO_DISTANCE(a.geo_location, e.geo_location, 0.005,'unit=mile')        AS distance
+         from temp_alums a 
+              cross join temp_events e 
+         where sdo_within_distance (a.geo_location                --a: Search field 
+                                     , e.geo_location             --e: Query Window 
+                                     , 'distance = 50 unit=mile'
+                                     ) = 'TRUE' 
+        order by distance asc  
+       )w 
+   )
+select * 
+from temp_pool tp 
+where 1=1 
+;
+ 
+ --select 149/60 minutes from dual;
+ 
+SELECT COUNT (*),count(distinct id_demo), count(distinct city_event_loc) cnt_city FROM t999999999_a;--6258/6045/7
+SELECT * FROM t999999999_a a where a.id_demo = 100048399;
+SELECT id_demo, COUNT (*)  FROM t999999999_a group by id_demo having COUNT (*) > 1;
+
+--stacker 
+exec qstackerrel('t999999999_a','t999999999_qstrk');
+select *  from t999999999_qstrk; --5370 
+
+
+drop table t999999999_inbox;
+CREATE TABLE t999999999_inbox AS
+SELECT *
+FROM(SELECT f.* 
+          , a.city_event_loc
+          , a.distance
+          , aa.city_event_loc  as closest_loc 
+          , round(aa.distance) as closest_loc_dist
+      FROM t999999999_qstrk f 
+           JOIN t999999999_a a 
+                 ON a.id_demo = f.id_demo 
+           LEFT JOIN t999999999_a aa 
+                 ON aa.id_demo = f.id_demo    
+                AND aa.rnk = 1   
+  )
+Pivot(MAX(round(distance))FOR CITY_EVENT_LOC IN ('CLOQUET'         AS CLOQUET
+                                                 , 'ELY'           AS ELY
+                                                 , 'GRAND RAPIDS'  AS GRANDRAPIDS
+                                                 , 'WASECA'        AS WASECA
+                                                 , 'LAMBERTON'     AS LAMBERTON
+                                                 , 'MORRIS'        AS MORRIS
+                                                 ))
+;
+
+select * from t999999999_inbox;

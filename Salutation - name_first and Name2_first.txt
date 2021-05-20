@@ -1,0 +1,1 @@
+=IF(I2<>"",CONCATENATE(D2," and ",I2),D2)

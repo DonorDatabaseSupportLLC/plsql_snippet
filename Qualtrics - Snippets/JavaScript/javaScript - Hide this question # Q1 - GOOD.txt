@@ -1,0 +1,9 @@
+
+
+Qualtrics.SurveyEngine.addOnReady(function()
+{
+	/* Place your JavaScript in the Queston to hide */
+         	
+	jQuery("#"+this.questionId+" .ExportTag").hide();
+
+});

@@ -1,0 +1,14 @@
+
+/* How to doc 
+- Hide Next or Back Buttons
+- Click the "JS" button for the last question on the page.
+- Paste the following code (underneath any existing JS)
+- Click "Save"
+*/
+
+Qualtrics.SurveyEngine.addOnload(function()
+{
+$('NextButton').hide();
+});
+
+

@@ -1,0 +1,82 @@
+--1. Views referencing 'msa_cbsa' object: 
+SELECT d.owner  AS dependant_Obj_owner
+       , d.NAME AS dependant_obj_name
+       , d.TYPE AS dependant_obj_type
+       , d.REFERENCED_NAME
+       , d.REFERENCED_TYPE
+       , av.view_name AS view_name   
+       ,av.text AS view_source
+ FROM  all_dependencies d
+ 			JOIN  all_views av ON av.view_name = d.NAME  
+WHERE  lower(referenced_name) = 'q_engagement_enh';--6
+
+--2. all object referencing specific object/table
+--1. Views referencing 'msa_cbsa' object: 
+SELECT d.owner  AS dependant_Obj_owner
+       , d.NAME AS dependant_obj_name
+       , d.TYPE AS dependant_obj_type
+       , d.REFERENCED_NAME
+       , d.REFERENCED_TYPE
+       , av.view_name 
+       , av.text AS view_source
+
+ FROM  all_dependencies d
+ 		 JOIN  all_views av ON av.view_name = d.NAME  
+WHERE  lower(referenced_name) = 'q_engagement_enh';--6
+
+  , (SELECT dbms_lob.substr(rr.desc_contact, dbms_lob.getlength(r.desc_contact), 1) 
+          FROM contact_reports rr
+          WHERE rr.id_contact_rpt = r.id_contact_rpt
+         ) AS contact_description 
+
+SELECT * FROM all_dependencies;
+
+--3. 
+SELECT d.* 
+FROM all_dependencies d 
+WHERE 1=1  
+--AND TYPE IN ('PROCEDURE','VIEW', 'FUCNTION','PACKAGE','PROCEDURE')
+AND d.owner = 'MMCNA'
+--AND d.NAME NOT IN ('CLUBS', 'PRES_CLUBS', 'CLUBS_NEW', 'CLUBS_OLD','GROUP_PART', 'GROUPS')
+AND LOWER(d.referenced_name) like 'q_engagement_enh'
+;
+
+desc tableau.UMAA_ENGAGEMENT_ENH;
+
+--2. Objects dependend on MSA_CBSA: package/procedure/function/view --NO actual code used shown (unlike script # 3)
+accept ls_REF_name prompt 'Enter an object to find references to: ' ;
+Select
+TYPE || ' ' || OWNER || '.' || NAME || ' references ' ||
+REFERENCED_TYPE || ' ' ||
+REFERENCED_OWNER || '.' || REFERENCED_NAME
+as DEPENDENCIES
+From all_dependencies d
+WHERE 1=1 -- name = UPPER(LTRIM(RTRIM( '&ls_REF_name' )))
+AND lower(referenced_name) = 'remove_v' 
+order by OWNER, name,REFERENCED_TYPE ,REFERENCED_OWNER ,REFERENCED_name;
+
+
+
+--3 . all packages, procedures, functions sources: Shows also actual code being used, including line#. 
+SELECT s.* --DISTINCT s.owner, s.NAME, s.type 
+FROM  all_source s 
+WHERE lower(s.text) LIKE '%''''pl'''',%' 	       
+--  AND s.owner = 'QRYADM' 
+ -- AND s.NAME NOT IN ('CLUBS', 'PRES_CLUBS','PRIORITY_POINTS','GROUP_FUN','RSCT','FILTER_FUN'
+ --									, 'UTIL_PIDA','MOONFIRE_GROUPS', 'I_INFO_NEW', 'I_INFO','GIR_TEST','GIR','CLUBS_OLD'
+ --      								)
+	--AND s.NAME NOT LIKE '%STACKER%'
+	--AND s.TYPE = 'PROCEDURE'
+	--AND s.NAME LIKE 'GIR'
+  ; --0 
+
+
+--=======================================================
+	SELECT * FROM all_dependencies c 
+	WHERE UPPER(c.referenced_owner) = 'MMCNA'
+	AND LOWER(c.referenced_name) LIKE '%q_engagement%'
+	AND LOWER(owner) != 'mmcna'
+	AND LOWER(NAME) NOT LIKE '%test'
+	;	
+	
+

@@ -1,0 +1,51 @@
+' Source: http://www.geeksengine.com/article/validate-email-vba.html
+
+Option Explicit
+
+Const MODULE_NAME As String = "modMail"
+
+'' Validate email address
+Public Function ValidateEmailAddress(ByVal strEmailAddress As String) As Boolean
+    On Error GoTo Catch
+    
+    Dim objRegExp As New RegExp
+    Dim blnIsValidEmail As Boolean
+    
+    objRegExp.IgnoreCase = True
+    objRegExp.Global = True
+    objRegExp.Pattern = "^([a-zA-Z0-9_\-\.]+)@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$"  
+ 
+
+    
+    blnIsValidEmail = objRegExp.Test(strEmailAddress)
+    ValidateEmailAddress = blnIsValidEmail
+      
+    Exit Function
+    
+Catch:
+    ValidateEmailAddress = False
+    MsgBox "Module: " & MODULE_NAME & " - ValidateEmailAddress function" & vbCrLf & vbCrLf _
+		& "Error#:  " & Err.Number & vbCrLf & vbCrLf & Err.Description
+End Function
+
+
+--step # 1 
+To use Regular Expressions in VBA, you first need to add a reference in the VBA code editor.
+
+Open your Access or Excel file, then open VBA editor. Depends on your version of Microsoft Office, there are different ways to open VBA code editor.
+
+When VBA code editor is opened, on the menu bar across the top, click Tools -> References...
+
+Then in the list of Available References, find Microsoft VBScript Regular Expressions 5.5 and then check the box on the left.
+
+--Step # 2 
+--a) Developer b) Visual Basic C) Insert > Module > Copy code above
+
+--step # 3 
+ a) loaded into your excel to be permanent:
+https://support.office.com/en-us/article/create-custom-functions-in-excel-2f06c10b-3622-40d6-a1b2-b6748ae8231f
+
+-----------------Test REGEXP
+Set oRegEx = CreateObject("vbscript.regexp")
+oRegEx.Pattern = "YourRegEx Goes Here"
+bResult = oRegEx.Test(YourStringToTestTheRegExWith)

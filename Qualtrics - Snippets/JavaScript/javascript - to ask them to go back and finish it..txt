@@ -1,0 +1,33 @@
+Qualtrics.SurveyEngine.addOnReady(function()
+{
+var warnings = [];
+var count=0;
+function init() {
+jQuery('#NextButton').hide();
+createNextButton();
+}
+
+function createNextButton() {
+    var nextButtonHTML = '<input id="CustomNextButton" class="NextButton Button" title="?" type="button" name="NextButton" value="?" aria-label="Next">';
+    jQuery('#Buttons').append(nextButtonHTML);
+    addNextButtonFunctionality();
+}
+
+function addNextButtonFunctionality() {
+    jQuery('#CustomNextButton').on('click', function() {
+
+    var responseTextField = document.getElementById('QID2~1_Total')
+    var currentResponse = responseTextField.value
+        if (currentResponse=="100" || count>0) {
+            jQuery('#NextButton').click();
+        } else {
+            alert("Please review your answers again");
+            count=count+1;
+        }
+    });
+}
+
+init();
+
+
+--https://www.qualtrics.com/community/discussion/5861/request-response-alert-on-a-constant-sum-question-when-the-total-does-not-equal-100
