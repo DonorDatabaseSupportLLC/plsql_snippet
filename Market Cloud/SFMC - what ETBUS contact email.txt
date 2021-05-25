@@ -1,0 +1,20 @@
+--what unit (MID) sent communications to specific email
+SELECT w.id_email, w.email_address, w.jobid, w.OYBAccountID, w.DeliveredDate 
+FROM (
+        SELECT s.SubscriberKey   AS id_email 
+               , ss.EmailAddress AS email_address
+               , s.jobid
+               , s.OYBAccountID  
+               , s.EventDate AS DeliveredDate
+               , row_number()over(partition by s.EventDate order by s.EventDate desc)rnk 
+           FROM _subscribers ss 
+           JOIN _Sent s ON s.SubscriberKey = ss.SubscriberKey  
+           LEFT JOIN _open o  ON o.SubscriberKey = s.SubscriberKey 
+                             AND o.jobid    = s.jobid 
+                             AND o.ListID   = s.ListID
+                             AND o.BatchID  = s.BatchID 
+                             AND o.IsUnique = '1'
+           WHERE lower(ss.EmailAddress) = 'aijibril@umn.edu'
+             AND s.EventDate > dateadd(d,-30,getdate())
+)w
+WHERE rnk = 1

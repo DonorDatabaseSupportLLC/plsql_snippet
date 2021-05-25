@@ -1,0 +1,29 @@
+SELECT w.LinkName  
+       , w.URL
+       , w.EmailName 
+       , w.jobid
+       , w.DeliveredDate
+       , count(*) AS ClickCount
+ FROM(SELECT c.SubscriberKey  AS id_email 
+           , c.LinkName  
+           , c.URL
+           , jb.EmailName  
+           , jb.jobid
+           , jb.DeliveredTime AS DeliveredDate
+           , row_number()over(partition by c.SubscriberKey 
+                                   order by c.EventDate desc)rnk 
+     FROM _click c  
+     JOIN _Job jb  ON jb.jobid = c.jobid
+    WHERE c.IsUnique = '1'
+    AND jb.jobid  = 9585590
+)w 
+WHERE rnk = 1 
+GROUP BY w.LinkName  
+       , w.URL
+       , w.EmailName 
+       , w.jobid
+       , w.DeliveredDate
+HAVING COUNT(*) > 0
+
+ 
+ 

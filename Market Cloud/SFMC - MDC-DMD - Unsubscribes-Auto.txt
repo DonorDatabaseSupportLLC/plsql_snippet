@@ -1,0 +1,15 @@
+--Business Unit: MDC-DMD  
+--MID: 6370838 
+SELECT b.SubscriberKey      AS ID_EMAIL 
+       , md.[Email Address]  AS EMAIL_ADDR  
+       , j.JOBID 
+       , j.EMAILNAME  
+       , c.eventDate         AS DateClick
+       , c.LinkName  
+       , c.URL
+ FROM _Unsubscribe  b  
+ JOIN _Job j             ON j.jobid = b.jobid
+ JOIN _click c           ON c.SubscriberKey = b.SubscriberKey
+ JOIN [main database] md ON c.SubscriberKey = md.[Email Address]
+WHERE b.jobid = c.jobid
+ AND c.IsUnique = '1'

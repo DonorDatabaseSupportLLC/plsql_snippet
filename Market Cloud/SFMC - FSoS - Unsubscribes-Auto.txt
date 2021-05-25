@@ -1,0 +1,19 @@
+--BU: Fsos - 6333777 
+--DE: 2021-alum-newsltr-combined-list 
+--Purpose: All emails that went out and what they have unsubscirbed.
+
+ SELECT DISTINCT 
+       b.SubscriberKey     AS ID_EMAIL 
+       , l.EmailAddress     AS EMAIL_ADDR  
+       , j.JOBID 
+       , j.EMAILNAME  
+       , c.eventDate         AS DateClick
+       , c.LinkName  
+       , c.URL
+ FROM _Unsubscribe  b  
+ JOIN _ListSubscribers  l ON l.SubscriberKey = b.SubscriberKey
+ JOIN _Job j              ON j.jobid = b.jobid
+ JOIN _click c            ON c.SubscriberKey = b.SubscriberKey
+WHERE c.listID = 66997
+ AND c.IsUnique = '1'
+ AND j.jobid = 9744107
