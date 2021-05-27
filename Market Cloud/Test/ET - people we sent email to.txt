@@ -1,0 +1,7 @@
+
+--people we sent email to last 15 days
+
+SELECT c.SubscriberKey as email_addr 
+FROM Ent._Subscribers  c
+INNER JOIN  Ent._Sent  s  ON s.SubscriberID= c.SubscriberID
+WHERE  cast(EventDate as date) >= cast (DATEADD(DAY, - 15, GETDATE()) as date)

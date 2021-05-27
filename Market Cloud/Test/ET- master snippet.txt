@@ -1,0 +1,73 @@
+--- ************** QUERY DIRECTLY DATA EXTENSION ***********************
+
+--STATUS: TESTED AND WORKS WELL
+--inactive_emails: did not open the email 
+--id_email (DE) = subscriberKey(ET)
+--email_addr (DE) = emailAddress(ET)
+SELECT DISTINCT  
+       Id_list    --data extension ID (query # + x --where x is number).
+       , id_email --subscriberKey
+       , id_demo
+       , opt_out_url
+       , email_addr
+       , name_last
+       , name_first
+FROM   [201701416_1_17110_14494671]
+WHERE  id_email NOT IN 
+(
+  SELECT   subscriberkey 
+  FROM ENT._OPEN
+  WHERE JobID = 2071494
+  AND eventDate is not NULL 
+)
+;
+
+
+-- People we sent Email from this data extension 
+-- status: not tested
+SELECT DISTINCT  
+       Id_list    --data extension ID (query # + x --where x is number).
+       , id_email --subscriberKey
+       , id_demo
+       , opt_out_url
+       , email_addr
+       , name_last
+       , name_first
+FROM [201701416_1_17110_14494671]
+WHERE  id_email NOT IN 
+(
+  SELECT   subscriberkey 
+  FROM ENT._SENT
+  WHERE JobID = 2071494
+  AND eventDate is not NULL 
+)
+;
+
+--Emails Sent since yesterday
+SELECT c.SubscriberKey as email_addr 
+FROM Ent._Subscribers  c
+INNER JOIN  Ent._Sent  s  ON s.SubscriberID= c.SubscriberID
+WHERE  CAST(EventDate as date) >= CAST(DATEADD(MONTH, - 1, GETDATE()) as date)
+
+
+--who open emails per day: day 1, 2,3,4,5,6, 7, over 7 days.
+--Status: not tested yet
+SELECT DISTINCT  
+       Id_list    --data extension ID (query # + x --where x is number).
+       , id_email --subscriberKey
+       , id_demo
+       , opt_out_url
+       , email_addr
+       , name_last
+       , name_first
+FROM   [201701416_1_17110_14494671]
+WHERE  id_email NOT IN 
+(
+  SELECT   subscriberkey 
+  FROM ENT._OPEN
+  WHERE JobID = 2071494
+  AND CAST(EventDate as date) >= CAST(DATEADD(MONTH, - 1, GETDATE()) as date)
+  
+)
+;
+

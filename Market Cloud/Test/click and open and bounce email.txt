@@ -1,0 +1,86 @@
+MDC-DMD: 6370838
+DE: Main Database
+
+--Clicked URL 
+SELECT 
+       w.LinkName  
+       , w.URL
+       , w.EmailName  
+       , count(*) AS ClickCount
+ FROM(SELECT c.SubscriberKey  AS id_email 
+           , c.LinkName  
+           , c.URL
+           , jb.EmailName  
+     FROM _click c  
+     JOIN _Job jb  ON jb.jobid = c.jobid
+    WHERE 1=1
+    AND c.IsUnique = '1'
+)w 
+WHERE 1=1 
+GROUP BY w.LinkName  
+       , w.URL
+       , w.EmailName  
+HAVING COUNT(*) > 0
+;
+
+--hard bounce
+ SELECT DISTINCT s.SubscriberKey    AS ID_EMAIL 
+       , LOWER(s.EmailAddress)      AS EMAIL_ADDR  
+       , b.BOUNCECATEGORY  
+       , jb.JOBID 
+       , jb.EMAILNAME  
+       , CAST(b.EVENTDATE AS DATE)  AS DATE_BOUNCED
+ FROM ENT._Subscribers s
+ JOIN _Bounce b ON b.SubscriberKey = s.SubscriberKey
+ JOIN _Job jb   ON jb.jobid = b.jobid
+WHERE lower(b.BounceCategory) = 'hard bounce'
+  AND b.EventDate >= DATEADD(m, -5, GetDate())
+  AND(LOWER(jb.emailName) like '%client%'
+      OR 
+      LOWER(jb.emailName) like '%animal%'
+      OR 
+      LOWER(jb.emailName) like '%equine%'
+      OR 
+      LOWER(jb.emailName) like '%cat%'
+      OR 
+      LOWER(jb.emailName) like '%dog%'
+      OR 
+      LOWER(jb.emailName) like '%feline%'
+      OR 
+      LOWER(jb.emailName) like '%canine%'
+      OR 
+      LOWER(jb.EmailSubject) like '%client%'
+      OR 
+      LOWER(jb.EmailSubject) like '%animal%'
+      OR 
+      LOWER(jb.EmailSubject) like '%equine%'
+      OR 
+      LOWER(jb.EmailSubject) like '%cat%'
+      OR 
+      LOWER(jb.EmailSubject) like '%dog%'
+      OR 
+      LOWER(jb.EmailSubject) like '%feline%'
+      OR 
+      LOWER(jb.EmailSubject) like '%canine%'
+      )
+    AND LEN(Left(SubString(s.SubscriberKey, PatIndex('%[0-9.-]%', s.SubscriberKey), 8000), PatIndex('%[^0-9.-]%', SubString(s.SubscriberKey, PatIndex('%[0-9.-]%', s.SubscriberKey), 8000) + 'X')-1))!= 10 
+;
+
+--unsubscribe
+ SELECT b.SubscriberKey      AS ID_EMAIL 
+       , [Email Address]     AS EMAIL_ADDR  
+       , j.JOBID 
+       , j.EMAILNAME  
+       , c.eventDate          AS DateClick
+       , c.LinkName  
+       , c.URL
+ FROM _Unsubscribe  b  
+ JOIN _Job j             ON j.jobid = b.jobid
+ JOIN _click c           ON c.SubscriberKey = b.SubscriberKey
+ JOIN [main database] md ON c.SubscriberKey = [md.Email Address]
+WHERE b.EventDate >= DATEADD(m, 12, GetDate())
+  AND b.jobid = c.jobid
+ AND c.IsUnique = '1'
+
+New DE: MDC-DMD - Unsubscribes
+

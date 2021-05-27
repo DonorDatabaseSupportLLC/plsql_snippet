@@ -1,0 +1,20 @@
+ --Bounced Emails in SMFC
+SELECT DISTINCT UPPER(s.EmailAddress) as EmailAddress, 
+s.SubscriberKey, 
+b.BounceCategory,
+bh.PROMO_KEY
+FROM _Subscribers as s
+INNER JOIN _Bounce as b
+ON b.SubscriberKey = s.SubscriberKey
+INNER JOIN BounceHeld as bh
+ON bh.SubscriberKey = s.SubscriberKey
+WHERE b.BounceCategory = 'Hard bounce'
+
+---ALL Bounced emails 
+SELECT DISTINCT UPPER(s.EmailAddress) as email_addr
+     , s.SubscriberKey AS id_email 
+     , b.BounceCategory
+FROM _Subscribers as s
+INNER JOIN _Bounce as b ON b.SubscriberKey = s.SubscriberKey
+WHERE b.BounceCategory = 'Hard bounce'
+AND RIGHT(s.SubscriberKey,2) = 'VV'

@@ -1,0 +1,11 @@
+select 
+subscriberkey
+from 201701416_1_17110_14494671
+where subscriberkey NOT IN 
+(
+  select 
+  subscriberkey 
+  from _open
+  where cast(EventDate as date) >= cast (DATEADD(MONTH, -2, GETDATE()) as date) 
+  and JobID = 2071494
+)

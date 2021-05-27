@@ -1,0 +1,22 @@
+Marketing Cloud - Audit jobs.txt
+--Marketing Cloud - Audit jobs to Setup
+--1) what unit (and job) sent communication (email) to specific subscriber/email --Use EmailAddress
+--  a) DE: UMF- BU sent Email (folder: Shared DE > Foundation)
+--  b) Activity Name: UMF- BU sent Email  
+--  c) SQL Query: UMF- BU sent Email -SQL 
+--AND LEN(Left(SubString(s.SubscriberKey, PatIndex('%[0-9.-]%', s.SubscriberKey), 8000), PatIndex('%[^0-9.-]%', SubString(s.SubscriberKey, PatIndex('%[0-9.-]%', s.SubscriberKey), 8000) + 'X')-1))!= 10 
+========================================================================================================
+--2) What BU someone/Subscriber optout/unsubscribed - _BusinessUnitUnsubscribes (run at Parent level)
+========================================================================================================
+--3) What BU sent email without using Opt_out in DE, following these steps:
+--i) Activey Query: ListID = 591 
+ ii) subscriberKey = 10 digits 
+iii) QTeam/Pete included
+ iv) LinkContent like '%www.foundation.umn.edu%'
+--v1) DE: UMF- Jobs Sent No DMS Optout
+--v2) SQL Query: UMF- Jobs Sent No DMS Optout - SQL
+
+--3) Check following 
+-- a) When someone unsubscribes email: (1) is it only that unit (2) or it is All Subscriber--looks like (2)
+-- b) ListID of _open, _sent, _jobs, _click, etc is the listID (defaults to "All Subscriber" for all DEs --591)
+========================================================================================================

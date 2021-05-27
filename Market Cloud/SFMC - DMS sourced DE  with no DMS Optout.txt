@@ -1,0 +1,19 @@
+/*List ID not like 202x --DMS but has subscriberKey 10 digit like ID_EMAIL */
+SELECT w.EventDate
+       , w.JOBID 
+       , w.OYBAccountID
+       , w.ListID
+FROM(
+       SELECT s.JOBID  
+               , s.EventDate        
+               , s.OYBAccountID   
+               , s.ListID
+               , ROW_NUMBER()OVER(PARTITION BY s.JOBID ORDER BY s.EventDate DESC) as rnk_1 
+         FROM _Sent s    
+        WHERE s.EventDate >= DATEADD(d, -90, GetDate())
+          AND s.OYBAccountID = 6325437
+          /* AND s.ListID = 591 */  /* Is All Subscriber */
+          /*AND s.ListID NOT like '2021%' */  /* Is DMS Subscriber */
+          AND LEN(Left(SubString(s.SubscriberKey, PatIndex('%[0-9.-]%', s.SubscriberKey), 8000), PatIndex('%[^0-9.-]%', SubString(s.SubscriberKey, PatIndex('%[0-9.-]%', s.SubscriberKey), 8000) + 'X')-1))= 10 /* But SubscriberKey is id_email 10 digit*/  
+        )W 
+    WHERE rnk_1 = 1 

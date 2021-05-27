@@ -1,0 +1,22 @@
+SELECT 
+       w.LinkName  
+       , w.URL
+       , w.EmailName  
+       , count(*) AS ClickCount
+ FROM(SELECT c.SubscriberKey  AS id_email 
+           , c.LinkName  
+           , c.URL
+           , jb.EmailName  
+     FROM _click c  
+     JOIN _Job jb  ON jb.jobid = c.jobid
+    WHERE 1=1
+    AND c.IsUnique = '1'
+)w 
+WHERE 1=1 
+GROUP BY w.LinkName  
+       , w.URL
+       , w.EmailName  
+HAVING COUNT(*) > 0
+
+ 
+ 

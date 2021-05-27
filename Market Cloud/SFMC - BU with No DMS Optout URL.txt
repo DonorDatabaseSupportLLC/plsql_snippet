@@ -1,0 +1,29 @@
+SELECT w.JOBID 
+    , w.EMAILNAME 
+    , w.DATE_SENT
+    , w.ETBU
+    , w.DATE_ADDED
+FROM( 
+	 SELECT jb.JOBID 
+		   , jb.EMAILNAME  
+		   , CAST(s.EVENTDATE AS DATE)  AS DATE_SENT
+		   , s.OYBAccountID             AS ETBU
+		   , CONVERT(DATE, GETDATE())   AS DATE_ADDED
+		   , ROW_NUMBER()OVER(PARTITION BY jb.jobid ORDER BY jb.JOBID DESC) as rnk 
+	 FROM _Sent s
+	 JOIN _Job jb   ON jb.jobid = s.jobid 
+	WHERE s.EventDate >= DATEADD(m, -5, GetDate())
+  	  AND s.OYBAccountID = 6325437
+  	  AND LEN(Left(SubString(s.SubscriberKey, PatIndex('%[0-9.-]%', s.SubscriberKey), 8000), PatIndex('%[^0-9.-]%', SubString(s.SubscriberKey, PatIndex('%[0-9.-]%', s.SubscriberKey), 8000) + 'X')-1))= 10 
+      AND s.IsUnique = '1'
+      AND NOT EXIST(SELECT c.subscriberKey
+                      FROM _click c
+                     WHERE c.SubscriberKey = s.SubscriberKey
+                       AND c.jobid = s.jobid
+                       AND c.batchid  = s.batchid
+                       AND c.ListID = s.ListID
+                       AND c.IsUnique = '1'
+                       AND c.LinkContent like '%UMF%'
+                     )
+	)w 
+WHERE rnk = 1 

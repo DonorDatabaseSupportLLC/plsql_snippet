@@ -1,0 +1,12 @@
+--SubscriberKey = email_addr
+--_subscribers = Table of all loaded into ET 
+-- Ent. = append since we're in Child Business Unit
+
+
+--specific subscriber who got an email specific date
+SELECT c.SubscriberKey as email_addr
+FROM Ent._Subscribers  c
+INNER JOIN  Ent._Sent  s  ON s.SubscriberID= c.SubscriberID
+WHERE  cast(EventDate as date) >= cast (DATEADD(DAY, -2, GETDATE()) as date)
+--AND c.SubscriberKey = 'aijibril@umn.edu'
+ 

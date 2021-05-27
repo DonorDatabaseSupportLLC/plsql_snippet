@@ -1,0 +1,12 @@
+
+--those who DID not open the email from specific Data Extension:
+
+SELECT DISTINCT  Id_list, id_email, id_demo, opt_out_url, email_addr, name_last, name_first
+from  [201701416_1_17110_14494671]
+where id_email NOT IN 
+(
+  select  subscriberkey 
+  from ENT._open
+  where JobID = 2071494
+  and eventDate is not NULL 
+)

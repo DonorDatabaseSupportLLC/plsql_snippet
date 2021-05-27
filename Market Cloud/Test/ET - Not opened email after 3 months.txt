@@ -1,0 +1,29 @@
+/* 
+Yes, you are right this can be done using System Data Views, so as per my understanding you have sent 5 emails to same set of subscribers and want to scrub off those who have not opened the email in past 3 months. If you know the name of the Live audience DE that was used for the send we can check the EventDate of the opens for those subs.
+
+Sample Query:
+*/
+
+select 
+subscriberkey
+from [Live DE name] 
+where subscriberkey NOT IN 
+(
+  select 
+  subscriberkey 
+  from _open
+  where cast(EventDate as date) >= cast (DATEADD(MONTH, -3, GETDATE()) as date) 
+  and JobID = <jobid goes here>
+)
+
+select 
+subscriberkey
+from 201701416_1_17110_14494671
+where subscriberkey NOT IN 
+(
+  select 
+  subscriberkey 
+  from _open
+  where cast(EventDate as date) >= cast (DATEADD(MONTH, -2, GETDATE()) as date) 
+  and JobID = 2071494
+)
