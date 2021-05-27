@@ -1,0 +1,26 @@
+FUNCTION open_pledge_balance
+    (id_demo_in                  IN             q_expectancy.id_demo%TYPE)
+RETURN VARCHAR2
+IS
+--VARIABLES
+    amt                                         NUMBER;
+--CURSORS
+CURSOR gifts_pledges_cur IS
+SELECT pldg.amt_fund_out
+FROM   q_expectancy pldg
+WHERE  id_demo_in = pldg.id_demo
+AND    pldg.code_anon = '0'
+AND    pldg.code_exp_type = 'PL'
+AND    pldg.code_primary = 'P'
+AND    pldg.amt_fund_out > 0.00;
+--RECORD TYPES
+--PL/SQL TABLE TYPES
+--RECORDS
+--PL/SQL TABLES
+BEGIN
+ amt := 0.0;
+ FOR rec IN gifts_pledges_cur LOOP
+  amt := amt + rec.amt_fund_out;
+ END LOOP;
+RETURN amt;
+END open_pledge_balance;

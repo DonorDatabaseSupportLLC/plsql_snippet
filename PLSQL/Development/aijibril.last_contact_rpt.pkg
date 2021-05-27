@@ -1,0 +1,77 @@
+CREATE OR REPLACE PACKAGE LAST_CONTACT_RPT
+AUTHID current_user
+  IS
+--
+-- To modify this template, edit file PKGSPEC.TXT in TEMPLATE
+-- directory of SQL Navigator
+--
+-- Purpose: Briefly explain the functionality of the package
+--
+-- MODIFICATION HISTORY
+-- Person      Date    Comments
+-- ---------   ------  ------------------------------------------
+   -- Enter package declarations as shown below
+
+FUNCTION contact_dt_substantive
+    (id_demo_in     IN            INT -- q_id.id_demo%TYPE
+     , unit_in      IN            VARCHAR2 --decode_unit.code_unit%TYPE
+    )
+RETURN DATE ;
+END LAST_CONTACT_RPT; -- Package spec
+/
+CREATE OR REPLACE PACKAGE BODY "LAST_CONTACT_RPT"
+IS
+--
+-- To modify this template, edit file PKGBODY.TXT in TEMPLATE
+-- directory of SQL Navigator
+--
+-- Purpose: Briefly explain the functionality of the package body
+--
+-- MODIFICATION HISTORY
+-- Person      Date    Comments
+-- ---------   ------  ------------------------------------------
+   -- Enter procedure, function bodies as shown below
+FUNCTION contact_dt_substantive
+    (id_demo_in                  IN    INT --  q_id.id_demo%TYPE
+     , unit_in                   IN    VARCHAR2(3) --  decode_unit.code_unit%TYPE DEFAULT '%'
+     )
+RETURN DATE
+IS
+--VARIABLES
+    dates                                         contact_reports.date_contact%TYPE;
+
+--CURSORS
+CURSOR last_contact_dt_cur IS
+SELECT  x.id_house
+         , MAX(x.date_contact) date_last_contact
+FROM(
+      SELECT id.id_household AS id_house
+              , cr.code_unit
+              , cr.code_contact_type
+              , cr.code_contact_purpose
+              , cr.code_qualify
+              , cr.date_contact
+              , cr.desc_contact
+      FROM contact_reports cr
+           JOIN q_id ID ON ID.id_demo = cr.id_demo
+      WHERE cr.code_unit = unit_in
+        AND cr.flag_substantive = 'Y'
+        AND id.id_demo = id_demo_in
+    )x
+GROUP BY x.id_house;
+
+--RECORD TYPES
+--PL/SQL TABLE TYPES
+--RECORDS
+--PL/SQL TABLES
+BEGIN
+ dates := NULL;
+ FOR rec IN last_contact_dt_cur LOOP
+  dates := rec.date_last_contact;
+ END LOOP;
+RETURN dates;
+END contact_dt_substantive;
+
+   -- Enter further code below as specified in the Package spec.
+END LAST_CONTACT_RPT;
+/

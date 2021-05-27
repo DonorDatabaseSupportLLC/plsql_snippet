@@ -1,0 +1,36 @@
+procedure copy_package
+  (old_name IN VARCHAR2
+  ,new_name IN VARCHAR2
+  ) is
+  ddl clob;
+begin
+  ddl := dbms_metadata.get_ddl
+    (object_type => 'PACKAGE_SPEC'
+    ,name => old_name
+    );
+  ddl := REPLACE(ddl, UPPER(old_name), UPPER(new_name));
+  ddl := REPLACE(ddl, LOWER(old_name), LOWER(new_name));
+  EXECUTE IMMEDIATE ddl;
+  ddl := dbms_metadata.get_ddl
+    (object_type => 'PACKAGE_BODY'
+    ,name => old_name);
+  ddl := REPLACE(ddl, UPPER(old_name), UPPER(new_name));
+  ddl := REPLACE(ddl, LOWER(old_name), LOWER(new_name));
+  EXECUTE IMMEDIATE ddl;
+end copy_package;
+
+/*********************************************  COPY package ***************************
+
+If the new package name already exists in the schema, it will be overwritten without warning.
+
+The old package is left untouched.
+
+If there are any grants or synonyms needed, they are not copied across.
+
+If the package has code that happens to include the package name within a longer identifier (e.g. NOT_MY_PACKAGE_NAME) this will fail as it will replace that text indiscriminately.
+
+If the package spec or body is greater than 32K in size, this procedure will fail.
+
+If the package spec or body is not found, this procedure raises ORA-31603. If the spec was found but body was not, the spec will be copied, and then it will raise the exception.
+
+*****************************************************************************************/

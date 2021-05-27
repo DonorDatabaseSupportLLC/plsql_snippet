@@ -1,0 +1,22 @@
+--copy package from schema A to Schema 'C'
+
+https://dba.stackexchange.com/questions/42402/copy-package-from-schema-b-to-schema-c
+
+SET PAGESIZE 10000
+SET feedback OFF
+SET heading OFF
+SET echo OFF
+spool d:\SQL.OUT
+
+SELECT TEXT
+FROM USER_SOURCE
+WHERE NAME = 'MY_PACKAGE';
+
+spool OFF
+SET echo ON
+SET feedback ON
+SET heading ON 
+
+CONNECT OTHER_USER/OTHER_PASSWORD@OTHER_DATABASE;
+
+@d:\SQL.OUT

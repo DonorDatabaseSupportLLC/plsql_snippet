@@ -1,0 +1,122 @@
+---------------------------------- Examples ---------------------------------- 
+
+--The following examples will make the use of CASE expression more clear, using Oracle CASE select statements.
+
+E.g.: Returning categories based on the salary of the employee.
+
+select sal, case when sal < 2000 then 'category 1' 
+                 when sal < 3000 then 'category 2' 
+                 when sal < 4000 then 'category 3' 
+                 else 'category 4' 
+            end 
+from emp; 
+--E.g.: The requirement is to find out the count of employees for various conditions as given below. There are multiple ways of getting this output. Five different --statements can be written to find the count of employees based on salary and commission conditions, or a single select having column-level selects could be written.
+
+select count(1) 
+from   emp 
+where  sal < 2000 
+and    comm is not null; 
+ 
+select count(1) 
+from   emp 
+where  sal < 2000 
+and    comm is null; 
+
+select count(1) 
+from   emp 
+where  sal < 5000 
+and    comm is not null; 
+
+select count(1) 
+from   emp 
+where  sal < 5000 
+and    comm is null; 
+
+select count(1) 
+from   emp 
+where  sal > 5000; 
+(or)
+
+select (select count(1)
+        from   emp
+        where  sal < 2000
+        and    comm is not null) a,
+       (select count(1)
+        from   emp
+        where  sal < 2000
+        and    comm is null) b,
+       (select count(1)
+        from   emp
+        where  sal < 5000
+        and    comm is not null) c,
+       (select count(1)
+        from   emp
+        where  sal < 5000
+        and    comm is null) d,
+(select count(1)
+from   emp
+where  sal > 5000) e
+from dual
+
+--With CASE expression, the above multiple statements on the same table can be avoided using Oracle select case.
+
+select count(case when sal < 2000 and comm is not null then 1 
+                  else null 
+             end), 
+       count(case when sal < 2000 and comm is null then 1 
+                  else null 
+             end), 
+       count(case when sal < 5000 and comm is not null then 1 
+                  else null 
+             end), 
+       count(case when sal < 5000 and comm is null then 1 
+                  else null 
+             end), 
+       count(case when sal > 5000 then 1 
+                  else null 
+             end) 
+from emp; 
+(or)
+
+select count(case when sal < 2000 and comm is not null then 1 
+             end) cnt1, 
+       count(case when sal < 2000 and comm is null then 1 
+             end) cnt2, 
+       count(case when sal < 5000 and comm is not null then 1 
+             end) cnt3, 
+       count(case when sal < 5000 and comm is null then 1 
+             end) cnt4, 
+       count(case when sal > 5000 then 1 
+             end) cnt5 
+from emp;
+E.g.: CASE expression can also be nested.
+
+select (case when qty_less6months < 0 and qty_6to12months < 0 then
+                            (case when season_code in ('0', '1', '2', '3', '4') then 'value is negative'
+                                  else 'No stock'
+                             end)
+             when qty_1to2years < 0 and qty_2to3years < 0 then
+                            (case when season_code in ('A', 'B', 'C', 'D', 'E') then 'value is negative'
+                                  else 'No stock'
+                             end)
+             else 'Stock Available'
+        end) stock_check
+from   jnc_lots_ageing_mexx_asof
+where  rownum < 20
+and    qty_less6months < 0 and qty_6to12months < 0
+
+---E.g.: The data types of the returned values should be the same. In the example below, one argument is assigned a numeric value resulting in an error.
+
+
+
+SQL> select sal, case when sal < 2000 then 'category 1'
+  2                   when sal < 3000 then 0
+  3                   when sal < 4000 then 'category 3'
+  4                   else 'category 4'
+  5              end
+  6  from emp;
+                 when sal < 3000 then 0
+                                      *
+ERROR at line 2:
+ORA-00932: inconsistent datatypes
+
