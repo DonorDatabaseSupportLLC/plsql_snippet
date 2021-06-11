@@ -1,0 +1,30 @@
+/* 
+source https://stackoverflow.com/questions/22542834/how-to-use-regular-expressions-regex-in-microsoft-excel-both-in-cell-and-loops
+*/
+Function simpleCellRegex(Myrange As Range) As String
+    Dim regEx As New RegExp
+    Dim strPattern As String
+    Dim strInput As String
+    Dim strReplace As String
+    Dim strOutput As String
+    
+    strPattern = "[^0-9]"
+    
+    If strPattern <> "" Then
+        strInput = Myrange.Value
+        strReplace = ""
+        
+        With regEx
+            .Global = True
+            .MultiLine = True
+            .IgnoreCase = False
+            .Pattern = strPattern
+        End With
+        
+        If regEx.test(strInput) Then
+            simpleCellRegex = regEx.Replace(strInput, strReplace)
+        Else
+            simpleCellRegex = "Not matched"
+        End If
+    End If
+End Function
