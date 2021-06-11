@@ -1,3 +1,6 @@
+--0. SUM, COUNT, rename column header
+ =query(peerScreened,"select H, I, SUM(F), COUNT(F) GROUP BY H, I LABEL SUM(F) 'TOTAL', COUNT(F) 'COUNT GIFTS', I 'AFTER SCREENED' ")
+---------------------------------------------------------------------------------------
 --1. CONTAINS operator count emails that has gmail prhase and label the field as gmail 
 =QUERY(bounced, "select count(A) Where D contains 'gmail' LABEL count(A) 'Gmail'")
 -------------------------------------------------------------------------------------
